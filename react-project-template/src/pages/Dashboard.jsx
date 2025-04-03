@@ -4,7 +4,7 @@ import {
   getTransactions,
   createTransaction,
   deleteTransaction,
-} from "../services/transactionService";
+} from "../service/transactionService";
 import TransactionPieChart from "../components/TransactionPieChart";
 import TransactionBarChart from "../components/TransactionBarChart";
 import { useNavigate } from "react-router-dom";
