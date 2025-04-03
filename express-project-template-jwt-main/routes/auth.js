@@ -16,26 +16,42 @@ const cookieSettings = {
 
 router.post("/register", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = await prisma.user.create({
-      data: {
-        email: req.body.email,
-        password: hashedPassword,
-      },
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
-    const jwtToken = jwt.sign({ sub: req.body.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+    if (existingUser) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await prisma.user.create({
+      data: { email, password: hashedPassword },
+    });
+
+    const jwtToken = jwt.sign({ sub: email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
     res
-    .cookie("token", jwtToken, cookieSettings)
-    .send("Cookie is set");
+      .cookie("token", jwtToken, cookieSettings)
+      .status(201)
+      .json({ message: "User created" });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in /register:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
+
 router.post("/login", async (req, res, next) => {
   try { 
-    const jwtToken = jwt.sign({ sub: req.body.email }, "secret");
+    const jwtToken = jwt.sign({ sub: req.body.email }, process.env.JWT_SECRET);
     res
       .cookie("token", jwtToken, cookieSettings)
       .send("Cookie is set");
