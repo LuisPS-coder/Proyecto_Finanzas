@@ -9,7 +9,10 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 
-const whitelist = ['http://localhost:5173'];
+const whitelist = [
+  'http://localhost:5173',
+  'https://proyecto-finanzas.netlify.app'
+];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
