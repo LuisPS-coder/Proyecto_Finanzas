@@ -1,47 +1,41 @@
 const router = require("express").Router();
 const prisma = require("../prisma");
-const jwt = require("jsonwebtoken");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 
-// Middleware para extraer el userId desde la cookie
-function getUserIdFromToken(req) {
-  const token = req.cookies.token;
-  if (!token) return null;
-
+router.get("/", isAuthenticated, async (req, res) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded.userId;
-  } catch (err) {
-    return null;
-  }
-}
+    const email = req.user.sub;
 
-// GET /transactions - obtener todas las transacciones del usuario
-router.get("/", async (req, res) => {
-  const userId = getUserIdFromToken(req);
-  if (!userId) return res.status(401).json({ message: "No autorizado" });
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-  try {
     const transactions = await prisma.transaction.findMany({
-      where: { userId },
+      where: { userId: user.id },
       orderBy: { date: "desc" },
     });
+
     res.json(transactions);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Error al obtener transacciones" });
   }
 });
 
-// POST /transactions - crear una nueva transacción
-router.post("/", async (req, res) => {
-  const userId = getUserIdFromToken(req);
-  if (!userId) return res.status(401).json({ message: "No autorizado" });
-
-  const { type, category, amount, note, date } = req.body;
-
+router.post("/", isAuthenticated, async (req, res) => {
   try {
+    const email = req.user.sub;
+    const { type, category, amount, note, date } = req.body;
+
+    if (!type || !category || !amount) {
+      return res.status(400).json({ message: "Campos obligatorios faltantes" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
     const newTransaction = await prisma.transaction.create({
       data: {
-        userId,
+        userId: user.id,
         type,
         category,
         amount: parseFloat(amount),
@@ -49,37 +43,39 @@ router.post("/", async (req, res) => {
         date: date ? new Date(date) : undefined,
       },
     });
+
     res.status(201).json(newTransaction);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Error al crear transacción" });
   }
 });
 
 // DELETE /transactions/:id - eliminar una transacción
-router.delete("/:id", async (req, res) => {
-  const userId = getUserIdFromToken(req);
-  if (!userId) return res.status(401).json({ message: "No autorizado" });
-
-  const { id } = req.params;
-
+router.delete("/:id", isAuthenticated, async (req, res) => {
   try {
-    // Asegúrate de que la transacción pertenece al usuario
+    const email = req.user.sub;
+    const { id } = req.params;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
     const transaction = await prisma.transaction.findUnique({
       where: { id: parseInt(id) },
     });
 
-    if (!transaction || transaction.userId !== userId) {
+    if (!transaction || transaction.userId !== user.id) {
       return res.status(403).json({ message: "Acceso denegado" });
     }
 
-    await prisma.transaction.delete({
-      where: { id: parseInt(id) },
-    });
+    await prisma.transaction.delete({ where: { id: parseInt(id) } });
 
     res.json({ message: "Transacción eliminada" });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Error al eliminar transacción" });
   }
 });
 
 module.exports = router;
+
