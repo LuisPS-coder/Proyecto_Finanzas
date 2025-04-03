@@ -1,4 +1,3 @@
-// routes/auth.js
 const express = require("express");
 const bcrypt = require("bcrypt");
 const router = express.Router();
@@ -10,9 +9,9 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 const cookieSettings = {
   httpOnly: true,
-  secure: false, 
-  sameSite: "strict", 
-}
+  secure: false,
+  sameSite: "strict",
+};
 
 router.post("/register", async (req, res) => {
   try {
@@ -22,9 +21,7 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "Email and password required" });
     }
 
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
 
     if (existingUser) {
       return res.status(409).json({ message: "User already exists" });
@@ -36,24 +33,24 @@ router.post("/register", async (req, res) => {
       data: { email, password: hashedPassword },
     });
 
-    const jwtToken = jwt.sign({ sub: email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const jwtToken = jwt.sign({ sub: email }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res
       .cookie("token", jwtToken, cookieSettings)
       .status(201)
-      .json({ message: "User created" });
+      .json({ message: "User created", token: jwtToken }); 
   } catch (error) {
     console.error("Error in /register:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validar campos
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password required" });
     }
@@ -70,26 +67,31 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Email or password incorrect" });
     }
 
-    const jwtToken = jwt.sign({ sub: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const jwtToken = jwt.sign({ sub: user.email }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res
       .cookie("token", jwtToken, cookieSettings)
       .status(200)
-      .json({ message: "Login successful" });
+      .json({ message: "Login successful", token: jwtToken }); 
   } catch (error) {
     console.error("Error in /login:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-
-router.get("/logged-in", passport.authenticate('jwt', { session: false }), (req, res) => {
-  try {
-    res.json({ user: req.user });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+router.get(
+  "/logged-in",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    try {
+      res.json({ user: req.user });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+    }
   }
-});
+);
 
 module.exports = router;
