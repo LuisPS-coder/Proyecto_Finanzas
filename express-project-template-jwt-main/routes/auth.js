@@ -49,17 +49,39 @@ router.post("/register", async (req, res) => {
 });
 
 
-router.post("/login", async (req, res, next) => {
-  try { 
-    const jwtToken = jwt.sign({ sub: req.body.email }, process.env.JWT_SECRET);
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validar campos
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ message: "Email or password incorrect" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Email or password incorrect" });
+    }
+
+    const jwtToken = jwt.sign({ sub: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
     res
       .cookie("token", jwtToken, cookieSettings)
-      .send("Cookie is set");
+      .status(200)
+      .json({ message: "Login successful" });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    console.error("Error in /login:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 router.get("/logged-in", passport.authenticate('jwt', { session: false }), (req, res) => {
   try {
