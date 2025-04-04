@@ -36,34 +36,48 @@ export default function Login() {
   };
 
   return (
-    <div>
+    <div className="flex justify-center items-center min-h-screen bg-blue-50">
       {loading ? (
         <Loading message="Despertando servidor..." />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label htmlFor="email">
-            Email
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="bg-white p-8 rounded-xl shadow-md w-full max-w-md space-y-6"
+        >
+          <h2 className="text-2xl font-semibold text-blue-700 text-center">Inicia sesión</h2>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               autoComplete="username"
               {...register("email", { required: true })}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.email && <span>This field is required</span>}
-          </label>
-          <label htmlFor="password">
-            Password
+            {errors.email && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Contraseña</label>
             <input
               type="password"
               autoComplete="current-password"
               {...register("password", { required: true })}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.password && <span>This field is required</span>}
-          </label>
-          <input type="submit" value="Login" />
-          {error && <p style={{ color: "red" }}>{error}</p>}
+            {errors.password && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
+          >
+            Iniciar sesión
+          </button>
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
         </form>
       )}
     </div>
   );
 }
-

@@ -6,12 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node prisma/seed/seed.js && node app.js",
+    "seed": "node prisma/seed/seed.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.6.0",
     "@prisma/client": "^5.7.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^1.41.0",
@@ -33,6 +35,7 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^8.0.0",
     "prisma": "^5.7.0"
   }
 }

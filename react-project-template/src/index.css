@@ -1,49 +1,39 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-}
+@import "tailwindcss";
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
+@layer base {
+  body {
+    @apply bg-blue-50 text-gray-900 font-sans antialiased;
+  }
+
+  h1 {
+    @apply text-3xl font-bold mb-4 text-blue-800;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold mb-3 text-blue-700;
+  }
+
+  h3 {
+    @apply text-xl font-semibold mb-2 text-blue-600;
+  }
+
+  p {
+    @apply mb-2 leading-relaxed;
+  }
+
+  a {
+    @apply text-blue-600 underline hover:text-blue-800;
+  }
+
+  input, select, textarea {
+    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400;
+  }
+
+  button {
+    @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition;
+  }
+
+  label {
+    @apply block mb-1 font-medium text-gray-700;
+  }
 }
