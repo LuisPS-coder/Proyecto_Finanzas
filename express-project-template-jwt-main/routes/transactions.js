@@ -2,37 +2,56 @@ const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma");
 
-// Obtener todas las transacciones (sin filtrar por usuario)
+// Obtener todas las transacciones
 router.get("/", async (req, res) => {
   try {
-    const transactions = await prisma.transaction.findMany();
+    const transactions = await prisma.transaction.findMany({
+      orderBy: { date: "desc" },
+    });
     res.json(transactions);
   } catch (error) {
     console.error("Error al obtener transacciones:", error);
-    res.status(500).json({ error: "Error al obtener transacciones" });
+    res.status(500).json({ message: "Error al obtener transacciones" });
   }
 });
 
-// Crear transacción (requiere userId en el body)
+// Crear una transacción (sin userId)
 router.post("/", async (req, res) => {
-  try {
-    const { title, amount, type, category, date, userId } = req.body;
+  const { title, amount, type, category, date } = req.body;
 
-    const newTransaction = await prisma.transaction.create({
+  if (!title || !amount || !type || !category || !date) {
+    return res.status(400).json({ message: "Datos incompletos" });
+  }
+
+  try {
+    const transaction = await prisma.transaction.create({
       data: {
         title,
-        amount: parseFloat(amount),
+        amount,
         type,
         category,
         date: new Date(date),
-        userId,
       },
     });
-
-    res.status(201).json(newTransaction);
+    res.status(201).json(transaction);
   } catch (error) {
     console.error("Error al crear transacción:", error);
-    res.status(500).json({ error: "Error al crear transacción" });
+    res.status(500).json({ message: "Error al crear transacción" });
+  }
+});
+
+// Eliminar una transacción
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await prisma.transaction.delete({
+      where: { id: Number(id) },
+    });
+    res.json({ message: "Transacción eliminada" });
+  } catch (error) {
+    console.error("Error al eliminar transacción:", error);
+    res.status(500).json({ message: "Error al eliminar transacción" });
   }
 });
 
