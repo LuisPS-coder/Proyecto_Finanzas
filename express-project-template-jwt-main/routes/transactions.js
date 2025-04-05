@@ -4,7 +4,12 @@ const prisma = require("../prisma");
 
 router.get('/', async (req, res) => {
   try {
-    const transactions = await prisma.transaction.findMany();
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        userId: req.user.id, 
+      },
+    });
+    
     res.json(transactions);
   } catch (error) {
     console.error('Error al obtener transacciones:', error);
