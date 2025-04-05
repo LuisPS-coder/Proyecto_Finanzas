@@ -6,7 +6,7 @@ router.get('/', async (req, res) => {
   try {
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: req.user.id, 
+        userId: req.user.sub, 
       },
     });
     
