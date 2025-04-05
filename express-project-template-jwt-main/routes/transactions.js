@@ -1,24 +1,20 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const prisma = require("../prisma");
 
-router.get('/', async (req, res) => {
+// Obtener todas las transacciones (sin filtrar por usuario)
+router.get("/", async (req, res) => {
   try {
-    const transactions = await prisma.transaction.findMany({
-      where: {
-        userId: req.user.sub, 
-      },
-    });
-    
+    const transactions = await prisma.transaction.findMany();
     res.json(transactions);
   } catch (error) {
-    console.error('Error al obtener transacciones:', error);
-    res.status(500).json({ error: 'Error al obtener transacciones' });
+    console.error("Error al obtener transacciones:", error);
+    res.status(500).json({ error: "Error al obtener transacciones" });
   }
 });
 
-// Crear una nueva transacción
-router.post('/', async (req, res) => {
+// Crear transacción (requiere userId en el body)
+router.post("/", async (req, res) => {
   try {
     const { title, amount, type, category, date, userId } = req.body;
 
@@ -35,8 +31,8 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(newTransaction);
   } catch (error) {
-    console.error('Error al crear transacción:', error);
-    res.status(500).json({ error: 'Error al crear transacción' });
+    console.error("Error al crear transacción:", error);
+    res.status(500).json({ error: "Error al crear transacción" });
   }
 });
 
