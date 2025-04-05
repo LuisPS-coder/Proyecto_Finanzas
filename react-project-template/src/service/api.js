@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://proyecto-finanzas-mgiw.onrender.com/api",
-  timeout: 10000,
+  timeout: 60000,
   withCredentials: false,
   headers: {
     "Content-Type": "application/json",
