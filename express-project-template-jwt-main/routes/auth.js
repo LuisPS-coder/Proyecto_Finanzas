@@ -34,11 +34,10 @@ router.post("/register", async (req, res) => {
     });
 
     const jwtToken = jwt.sign(
-      { sub: user.email, email: user.email },
+      { sub: newUser.id, email: newUser.email },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-    
 
     res
       .cookie("token", jwtToken, cookieSettings)
@@ -70,7 +69,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Email or password incorrect" });
     }
 
-    const jwtToken = jwt.sign({ sub: user.email }, process.env.JWT_SECRET, {
+    const jwtToken = jwt.sign({ sub: user.id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
