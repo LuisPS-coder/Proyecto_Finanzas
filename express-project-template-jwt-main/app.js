@@ -34,7 +34,7 @@ app.use(passport.initialize());
 require('./config/passport');
 require('./config/cloudinary');
 
-app.use("/", require("./routes"));
+app.use("/api", require("./routes"));
 
 console.log("🌍 Puerto:", process.env.PORT);
 console.log("🔐 JWT_SECRET:", process.env.JWT_SECRET);
