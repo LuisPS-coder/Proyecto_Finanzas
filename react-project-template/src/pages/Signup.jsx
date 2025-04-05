@@ -1,83 +1,65 @@
-import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthProvider";
-import Loading from "../components/Loading";
+import { useAuth } from "../hooks/useAuth";
 
-export default function Signup() {
-  const navigate = useNavigate();
-  const { registerUser } = useContext(AuthContext);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const [loading, setLoading] = useState(false);
+function Signup() {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { register } = useAuth();
 
-  const onSubmit = async (data) => {
-    setLoading(true);
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setError("");
 
     try {
-      await registerUser(data);
-      navigate("/dashboard");
-    } catch (err) {
-      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
-        setError("Despertando servidor... vuelve a intentarlo en unos segundos");
+      const res = await register(form);
+      if (res?.token) {
+        navigate("/dashboard");
       } else {
-        setError("Error al registrarte: " + (err.response?.data?.message || err.message));
+        setError("No se pudo completar el registro.");
       }
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError("Error en el registro. Verifica los datos.");
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-blue-50">
-      {loading ? (
-        <Loading message="Despertando servidor..." />
-      ) : (
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="bg-white p-8 rounded-xl shadow-md w-full max-w-md space-y-6"
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded">
+      <h1 className="text-2xl font-bold mb-4 text-center">Crear cuenta</h1>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          className="p-2 border border-gray-300 rounded"
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          className="p-2 border border-gray-300 rounded"
+          type="password"
+          name="password"
+          placeholder="Contraseña"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <button
+          type="submit"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded"
         >
-          <h2 className="text-2xl font-semibold text-blue-700 text-center">Crea tu cuenta</h2>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              autoComplete="email"
-              {...register("email", { required: true })}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.email && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Contraseña</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              {...register("password", { required: true })}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.password && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-          >
-            Crear cuenta
-          </button>
-
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-        </form>
-      )}
+          Registrarse
+        </button>
+      </form>
     </div>
   );
 }
+
+export default Signup;
