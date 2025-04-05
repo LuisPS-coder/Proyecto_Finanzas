@@ -7,7 +7,6 @@ import {
 } from "../service/transactionService";
 import TransactionPieChart from "../components/TransactionPieChart";
 import TransactionBarChart from "../components/TransactionBarChart";
-import TransactionLineChart from "./components/TransactionLineChart"; 
 import { useNavigate } from "react-router-dom";
 
 
@@ -251,8 +250,7 @@ export default function Dashboard() {
             <h3 className="text-xl font-semibold text-blue-700 mt-6 mb-2">Gráfica por tipo</h3>
             <TransactionBarChart data={transFiltradas} />
   
-            <h3 className="text-xl font-semibold text-blue-700 mt-6 mb-2">Evolución mensual</h3>
-            <TransactionLineChart data={transFiltradas} />
+
           </>
         )}
   
