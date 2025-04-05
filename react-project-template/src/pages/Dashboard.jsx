@@ -18,6 +18,7 @@ export default function Dashboard() {
     type: "gasto",
     category: "",
     amount: "",
+    date: "",
     note: "",
   });
 
@@ -26,9 +27,14 @@ export default function Dashboard() {
   const [hasta, setHasta] = useState("");
 
   const fetchData = async () => {
-    const res = await getTransactions();
-    setTransactions(res.data);
-  };
+    try {
+      const res = await getTransactions();
+      console.log("Transacciones recibidas:", res.data); 
+      setTransactions(res.data);
+    } catch (error) {
+      console.error("Error al cargar transacciones:", error); 
+    }
+  };  
 
   useEffect(() => {
     fetchData();
@@ -40,10 +46,17 @@ export default function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await createTransaction(form);
-    setForm({ type: "gasto", category: "", amount: "", note: "" });
-    fetchData();
+    console.log("Enviando transacción:", form); 
+  
+    try {
+      await createTransaction(form);
+      setForm({ type: "gasto", category: "", amount: "", note: "", date: "" });
+      fetchData();
+    } catch (error) {
+      console.error("Error al crear la transacción:", error); 
+    }
   };
+  
 
   const handleDelete = async (id) => {
     await deleteTransaction(id);
@@ -169,41 +182,64 @@ export default function Dashboard() {
   
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-blue-700 mb-2">Añadir nueva transacción</h2>
-          <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <select name="type" value={form.type} onChange={handleChange} className="p-2 border border-gray-300 rounded">
-              <option value="gasto">Gasto</option>
-              <option value="ingreso">Ingreso</option>
-            </select>
-            <input
-              type="text"
-              name="category"
-              placeholder="Categoría"
-              value={form.category}
-              onChange={handleChange}
-              required
-              className="p-2 border border-gray-300 rounded"
-            />
-            <input
-              type="number"
-              name="amount"
-              placeholder="Monto"
-              value={form.amount}
-              onChange={handleChange}
-              required
-              className="p-2 border border-gray-300 rounded"
-            />
-            <input
-              type="text"
-              name="note"
-              placeholder="Nota (opcional)"
-              value={form.note}
-              onChange={handleChange}
-              className="p-2 border border-gray-300 rounded"
-            />
-            <button type="submit" className="col-span-full sm:col-span-2 lg:col-span-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-              Añadir
-            </button>
-          </form>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <select
+    name="type"
+    value={form.type}
+    onChange={handleChange}
+    required
+    className="p-2 border border-gray-300 rounded"
+  >
+    <option value="gasto">Gasto</option>
+    <option value="ingreso">Ingreso</option>
+  </select>
+
+  <input
+    type="text"
+    name="category"
+    placeholder="Categoría"
+    value={form.category}
+    onChange={handleChange}
+    required
+    className="p-2 border border-gray-300 rounded"
+  />
+
+  <input
+    type="number"
+    name="amount"
+    placeholder="Cantidad"
+    value={form.amount}
+    onChange={handleChange}
+    required
+    className="p-2 border border-gray-300 rounded"
+  />
+
+  <input
+    type="text"
+    name="note"
+    placeholder="Nota (opcional)"
+    value={form.note}
+    onChange={handleChange}
+    className="p-2 border border-gray-300 rounded"
+  />
+
+  <input
+    type="date"
+    name="date"
+    value={form.date}
+    onChange={handleChange}
+    required
+    className="p-2 border border-gray-300 rounded"
+  />
+
+  <button
+    type="submit"
+    className="col-span-full sm:col-span-2 lg:col-span-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+  >
+    Añadir
+  </button>
+</form>
+
         </div>
   
         {transFiltradas.length > 0 && (
