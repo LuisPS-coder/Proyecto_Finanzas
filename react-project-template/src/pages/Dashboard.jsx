@@ -121,9 +121,6 @@ export default function Dashboard() {
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl p-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-blue-800">Bienvenido al Dashboard</h1>
-          <button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-            Cerrar sesión
-          </button>
         </div>
   
         {user && (
