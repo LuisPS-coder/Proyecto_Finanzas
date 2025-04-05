@@ -46,7 +46,6 @@ export default function Signup() {
         >
           <h2 className="text-2xl font-semibold text-blue-700 text-center">Crea tu cuenta</h2>
 
-
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -67,17 +66,6 @@ export default function Signup() {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             />
             {errors.password && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
-            <input
-              type="password"
-              autoComplete="new-password"
-              {...register("confirmPassword", { required: true })}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-            {errors.confirmPassword && <span className="text-red-500 text-sm">Este campo es obligatorio</span>}
           </div>
 
           <button
