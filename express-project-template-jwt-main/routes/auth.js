@@ -33,9 +33,12 @@ router.post("/register", async (req, res) => {
       data: { email, password: hashedPassword },
     });
 
-    const jwtToken = jwt.sign({ sub: email }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const jwtToken = jwt.sign(
+      { sub: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    
 
     res
       .cookie("token", jwtToken, cookieSettings)
