@@ -4,7 +4,7 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 router.get("/", isAuthenticated, async (req, res) => {
   try {
-    const email = req.user.sub;
+    const email = req.user.id;
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -24,7 +24,7 @@ router.get("/", isAuthenticated, async (req, res) => {
 router.post("/", isAuthenticated, async (req, res) => {
   try {
     console.log('🌐 Recibida nueva transacción:', req.body);
-    const email = req.user.sub;
+    const email = req.user.id;
     const { type, category, amount, note, date } = req.body;
 
     if (!type || !category || !amount) {
@@ -56,7 +56,7 @@ router.post("/", isAuthenticated, async (req, res) => {
 
 router.delete("/:id", isAuthenticated, async (req, res) => {
   try {
-    const email = req.user.sub;
+    const email = req.user.id;
     const { id } = req.params;
 
     const user = await prisma.user.findUnique({ where: { email } });
