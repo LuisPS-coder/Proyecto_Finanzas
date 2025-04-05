@@ -16,7 +16,7 @@ export const NavBar = () => {
       <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
         {/* Logo + Inicio */}
         <div className="flex items-center gap-4">
-          <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+          <img src="/icon.png" alt="Logo" className="h-8 w-auto" />
           <Link to="/" className="text-lg font-bold text-blue-700">
             Inicio
           </Link>
