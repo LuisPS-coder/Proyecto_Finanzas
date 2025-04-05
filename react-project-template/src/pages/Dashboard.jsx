@@ -7,7 +7,7 @@ import {
 } from "../service/transactionService";
 import TransactionPieChart from "../components/TransactionPieChart";
 import TransactionBarChart from "../components/TransactionBarChart";
-import TransactionLineChart from './TransactionLineChart'; 
+import TransactionLineChart from './components/TransactionLineChart'; 
 import { useNavigate } from "react-router-dom";
 
 
