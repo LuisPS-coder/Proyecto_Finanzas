@@ -48,7 +48,7 @@ router.post("/", isAuthenticated, async (req, res) => {
     console.log('✅ Transacción creada:', newTransaction);
     res.status(201).json(newTransaction);
   } catch (err) {
-    console.error('❌ Error al crear transacción:', error);
+    console.error('❌ Error al crear transacción:', err);
     res.status(500).json({ error: "Error al crear transacción" });
   }
 });
