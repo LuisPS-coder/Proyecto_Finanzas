@@ -19,7 +19,7 @@ function Signup() {
     try {
       const res = await register(form);
       if (res?.token) {
-        navigate("/dashboard");
+        navigate("/");
       } else {
         setError("No se pudo completar el registro.");
       }

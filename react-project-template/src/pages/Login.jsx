@@ -23,7 +23,7 @@ export default function Login() {
 
     try {
       await login(data);
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
         setError("Despertando servidor... vuelve a intentarlo en unos segundos");
