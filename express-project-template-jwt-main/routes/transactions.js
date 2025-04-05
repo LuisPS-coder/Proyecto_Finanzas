@@ -23,6 +23,7 @@ router.get("/", isAuthenticated, async (req, res) => {
 
 router.post("/", isAuthenticated, async (req, res) => {
   try {
+    console.log('🌐 Recibida nueva transacción:', req.body);
     const email = req.user.sub;
     const { type, category, amount, note, date } = req.body;
 
@@ -44,14 +45,15 @@ router.post("/", isAuthenticated, async (req, res) => {
       },
     });
 
+    console.log('✅ Transacción creada:', newTransaction);
     res.status(201).json(newTransaction);
   } catch (err) {
-    console.error(err);
+    console.error('❌ Error al crear transacción:', error);
     res.status(500).json({ error: "Error al crear transacción" });
   }
 });
 
-// DELETE /transactions/:id - eliminar una transacción
+
 router.delete("/:id", isAuthenticated, async (req, res) => {
   try {
     const email = req.user.sub;
