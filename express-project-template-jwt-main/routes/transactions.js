@@ -11,47 +11,46 @@ router.get("/", async (req, res) => {
     res.json(transactions);
   } catch (error) {
     console.error("Error al obtener transacciones:", error);
-    res.status(500).json({ message: "Error al obtener transacciones" });
+    res.status(500).json({ error: "Error al obtener transacciones" });
   }
 });
 
-// Crear una transacción (sin userId)
+// Crear nueva transacción (sin validación ni user)
 router.post("/", async (req, res) => {
-  const { title, amount, type, category, date } = req.body;
-
-  if (!title || !amount || !type || !category || !date) {
-    return res.status(400).json({ message: "Datos incompletos" });
-  }
-
   try {
+    const { title, amount, type, category, date } = req.body;
+
+    // Por si frontend no envía 'title', usar 'category'
+    const titleToUse = title || category || "Sin título";
+
     const transaction = await prisma.transaction.create({
       data: {
-        title,
-        amount,
+        title: titleToUse,
+        amount: parseFloat(amount),
         type,
         category,
         date: new Date(date),
       },
     });
+
     res.status(201).json(transaction);
   } catch (error) {
     console.error("Error al crear transacción:", error);
-    res.status(500).json({ message: "Error al crear transacción" });
+    res.status(500).json({ error: "Error al crear transacción" });
   }
 });
 
-// Eliminar una transacción
+// Eliminar transacción por ID
 router.delete("/:id", async (req, res) => {
-  const { id } = req.params;
-
   try {
-    await prisma.transaction.delete({
-      where: { id: Number(id) },
-    });
+    const id = parseInt(req.params.id);
+
+    await prisma.transaction.delete({ where: { id } });
+
     res.json({ message: "Transacción eliminada" });
   } catch (error) {
     console.error("Error al eliminar transacción:", error);
-    res.status(500).json({ message: "Error al eliminar transacción" });
+    res.status(500).json({ error: "Error al eliminar transacción" });
   }
 });
 
